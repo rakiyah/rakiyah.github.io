@@ -54,28 +54,60 @@
     container.style.height = '82px';
     sendMobileStatusToIframe();
   });
-  function addCalendlyStyles() {
-    const style = document.createElement('style');
-    style.innerHTML = `
-      ${window.isMobile ? `
-      @media (max-width: 768px) {
-        #calendly-embed {
-          width: 100vh;
-          min-width: 100vh !important;
-          height: 80vh;
-          max-height: 80vh; /* Adjust height for mobile */
-          border-radius: 0;
-        }
-        #calendly-close {
-          top: 5px;
-          right: 5px;
-          font-size: 24px;
-          width: 32px;
-          height: 32px;
-        }
-      }` : ''}
+  function addCalendlyElements() {
+    // Calendly Overlay
+    const calendlyOverlay = document.createElement("div");
+    calendlyOverlay.id = "calendly-overlay";
+    calendlyOverlay.style.cssText = `
+      display: none;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
     `;
-    document.head.appendChild(style);
+    document.body.appendChild(calendlyOverlay);
+
+    // Calendly Embed
+    const calendlyEmbed = document.createElement("div");
+    calendlyEmbed.id = "calendly-embed";
+    calendlyEmbed.style.cssText = `
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: transparent;
+      z-index: 10000;
+      border-radius: 8px;
+    `;
+
+    // Close Button
+    const closeButton = document.createElement("div");
+    closeButton.id = "calendly-close";
+    closeButton.role = "button";
+    closeButton.innerHTML = "&times;";
+    closeButton.style.cssText = `
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      font-size: 28px;
+      color: #ff0000;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1001;
+    `;
+    calendlyEmbed.appendChild(closeButton);
+    document.body.appendChild(calendlyEmbed);
+
+    // Close Button Event Listener
+    closeButton.addEventListener("click", closeCalendlyModal);
   }
   function updateCalendlyStyles() {
     const calendlyEmbed = document.getElementById('calendly-embed')
@@ -92,6 +124,18 @@
       calendlyEmbed.style.borderRadius = '8px'
     }
   }
+
+  addCalendlyElements();
+
+  window.addEventListener("message", function(e) {
+    if(isCalendlyEvent(e)) {
+      if(e.data.event === "calendly.event_scheduled") {
+        sendDataToChatbot({ action: 'storeMeeting', meetingDetails: e.data.payload }) 
+      }
+    }});
+  document.getElementById('calendly-close').addEventListener('click', function() {
+    closeCalendlyModal()
+  })
 
   function openCalendlyModal(url) {
     updateCalendlyStyles()
@@ -241,13 +285,5 @@
       }
   }, false);
 
-  window.addEventListener("message", function(e) {
-    if(isCalendlyEvent(e)) {
-      if(e.data.event === "calendly.event_scheduled") {
-        sendDataToChatbot({ action: 'storeMeeting', meetingDetails: e.data.payload }) 
-      }
-    }});
-  document.getElementById('calendly-close').addEventListener('click', function() {
-    closeCalendlyModal()
-  })
+
 })();
