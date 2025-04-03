@@ -1,0 +1,33 @@
+<<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Full Screen Image</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+      body {
+        background: url('./screenshot.png') no-repeat center center fixed;
+        background-size: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <script id="portal-scripts" data-api-key="4f5a2b6f95064cc6b9468ac24556d9f7" src="https://portal.autoops.com/portal-scripts.js"></script>
+    <div id="chatbot-container"></div>
+    <script nowprocket async>
+      window.kwixiConfig = { clientId: "cus_QOiH61pHoghhh" };
+      (function(d, s, id) {
+        if (!d.getElementById(id)) {
+          const js = d.createElement(s);
+          js.id = id;
+          js.src = "https://storage.googleapis.com/kwixi-webstorage/embedding/kwixi-embed.js"; 
+          const firstScript = d.getElementsByTagName(s)[0];
+          firstScript.parentNode.insertBefore(js, firstScript);
+        };
+      })(document, "script", "kwixi-chatbot-script");
+    </script> 
+  </body>
+  </html>
